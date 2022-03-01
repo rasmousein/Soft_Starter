@@ -4,9 +4,9 @@
 #define triac 3           //pin to trigger the Triac (Output)
 #define ledred 4          //LED shows whether system is ready to softstart
 #define ledgreen 5        //LED  shows whether softstart occured
-#define push 6            //Push Button Input to start the softstart
+#define input 6            //Push Button Input to start the softstart
 bool zero = 0;            //variable as a status flag which shows whether a zero crossing point occured
-bool pushinput = 0;       //variable as a status flag which shows whether push button was pushed
+bool status = 0;       //variable as a status flag which shows whether push button was pushed
 int i = 100;                //variable that decreases the time delay for the phase angle control
 
 
@@ -28,12 +28,12 @@ void zerocrossing () {                        //as soon as zero crossing occurs 
 
 void zerocrossing () {                        //as soon as zero crossing occurs and push button was pushed, triac is turned off and the timer is set for the compare match interrupt whose delay slowly decreases through the variable i
   digitalWrite(triac, LOW);
-  if (pushinput == 1) {
+  if (status == 1) {
     OCR1B = 590 - i;
     TCNT1 = 0;
     zero = 1;
     static unsigned short int counter = 0;
-    if (counter > 3) {
+    if (counter > 4) {
       i++;
       counter = 0;
       }
@@ -57,12 +57,10 @@ void setup() {
   pinMode(triac, OUTPUT);
   pinMode(ledred, OUTPUT);
   pinMode(ledgreen, OUTPUT);
-  pinMode(push, INPUT_PULLUP);
+  pinMode(input, INPUT_PULLUP);
   digitalWrite(triac, LOW);
   digitalWrite(ledred, HIGH);
   digitalWrite(ledgreen, LOW);
-  OCR1B = 590;
-  TCNT1 = 0;
   TCCR1A = 0;                                 //clear timer0 register (TCCR0A)            
   TCCR1B = 0;                                 //clear timer0 register (TCCR0B)
   TCCR1B |= (1 << CS12) | (1 << WGM12);       //set prescaler of timer0 to 256
@@ -72,7 +70,13 @@ void setup() {
 }
 
 void loop() {                                 
-  if (digitalRead(push) == LOW) {
-    pushinput = 1;
+  if (digitalRead(input) == LOW) {
+    status = 1;
+  }
+  if (digitalRead(input) == HIGH) {
+    status = 0;
+    digitalWrite(ledgreen, LOW);
+    i = 100 ;
+    
   }
 }
