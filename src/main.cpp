@@ -20,7 +20,7 @@ void zerocrossing () {                        //as soon as zero crossing occurs 
     TCNT1 = 0;
     zero = 1;
     static unsigned short int counter = 0;
-    if (counter > 4) {
+    if (counter > 3) {
       i++;
       counter = 0;
       }
