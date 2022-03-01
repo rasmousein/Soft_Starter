@@ -7,7 +7,7 @@
 #define push 6            //Push Button Input to start the softstart
 bool zero = 0;            //variable as a status flag which shows whether a zero crossing point occured
 bool pushinput = 0;       //variable as a status flag which shows whether push button was pushed
-int i = 150;                //variable that decreases the time delay for the phase angle control
+int i = 100;                //variable that decreases the time delay for the phase angle control
 
 
 /*
@@ -33,7 +33,7 @@ void zerocrossing () {                        //as soon as zero crossing occurs 
     TCNT1 = 0;
     zero = 1;
     static unsigned short int counter = 0;
-    if (counter > 5) {
+    if (counter > 3) {
       i++;
       counter = 0;
       }
