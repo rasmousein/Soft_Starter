@@ -7,10 +7,10 @@
 #define push 6            //Push Button Input to start the softstart
 bool zero = 0;            //variable as a status flag which shows whether a zero crossing point occured
 bool pushinput = 0;       //variable as a status flag which shows whether push button was pushed
-int i = 0;                //variable that decreases the time delay for the phase angle control
+int i = 150;                //variable that decreases the time delay for the phase angle control
 
 
-
+/*
 void zerocrossing () {                        //as soon as zero crossing occurs and push button was pushed, triac is turned off and the timer is set for the compare match interrupt whose delay slowly decreases through the variable i
   digitalWrite(triac, LOW);
   if (pushinput == 1) {
@@ -18,6 +18,26 @@ void zerocrossing () {                        //as soon as zero crossing occurs 
     TCNT1 = 0;
     zero = 1;
     i++;
+    if (i == 588) {
+      i = 587;
+      digitalWrite(ledgreen, HIGH);
+    }
+  }
+}
+*/
+
+void zerocrossing () {                        //as soon as zero crossing occurs and push button was pushed, triac is turned off and the timer is set for the compare match interrupt whose delay slowly decreases through the variable i
+  digitalWrite(triac, LOW);
+  if (pushinput == 1) {
+    OCR1B = 590 - i;
+    TCNT1 = 0;
+    zero = 1;
+    static unsigned short int counter = 0;
+    if (counter > 5) {
+      i++;
+      counter = 0;
+      }
+  counter++;
     if (i == 588) {
       i = 587;
       digitalWrite(ledgreen, HIGH);
@@ -41,6 +61,8 @@ void setup() {
   digitalWrite(triac, LOW);
   digitalWrite(ledred, HIGH);
   digitalWrite(ledgreen, LOW);
+  OCR1B = 590;
+  TCNT1 = 0;
   TCCR1A = 0;                                 //clear timer0 register (TCCR0A)            
   TCCR1B = 0;                                 //clear timer0 register (TCCR0B)
   TCCR1B |= (1 << CS12) | (1 << WGM12);       //set prescaler of timer0 to 256
