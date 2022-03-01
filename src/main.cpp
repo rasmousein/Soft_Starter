@@ -17,7 +17,10 @@ void zerocrossing () {                        //as soon as zero crossing occurs 
     OCR1B = 590 - i;
     TCNT1 = 0;
     zero = 1;
-    i++;
+    static unsigned long int timestamp = 0;
+    if (millis() - timestamp > 2 /* minimum 2ms delai pour augmenter le duty de 1/590) */{
+      i++;
+    }
     if (i == 588) {
       i = 587;
       digitalWrite(ledgreen, HIGH);
